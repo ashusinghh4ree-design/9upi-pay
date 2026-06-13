@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9UPI PAY - Administrative Command Terminal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts & Lucide Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #0B0E14;
+            color: #E2E8F0;
+        }
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0E14;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1E293B;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-container" class="flex-grow flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-[#111622] border border-slate-800 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-indigo-500"></div>
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                    <i data-lucide="shield-alert" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white">9UPI PAY Command</h1>
+                    <p class="text-xs text-slate-500">h4r.fun/admin Terminal Secure Entry</p>
+                </div>
+            </div>
+
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Admin ID / Email</label>
+                    <input type="text" id="login-username" required placeholder="e.g. 9UPIADMIN" 
+                           class="w-full bg-[#0B0E14] border border-slate-800 rounded-lg py-2.5 px-3.5 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-sm transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Secure Entry Pass / PIN</label>
+                    <input type="password" id="login-pin" required placeholder="••••" maxlength="4"
+                           class="w-full bg-[#0B0E14] border border-slate-800 rounded-lg py-2.5 px-3.5 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-sm transition-all tracking-widest text-center">
+                </div>
+                <div class="pt-2">
+                    <button type="submit" id="btn-login-submit"
+                            class="w-full bg-cyan-500 hover:bg-cyan-600 active:bg-cyan-700 text-slate-950 font-semibold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center space-x-2">
+                        <span>UNSEAL DATA BRIDGE</span>
+                        <i data-lucide="key-round" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </form>
+            <div id="login-err-msg" class="mt-4 text-xs text-red-400 hidden flex items-center space-x-1">
+                <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                <span id="login-err-text">Verification failed.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD VIEW (HIDDEN BY DEFAULT WITH CSS TAILWIND) -->
+    <div id="dashboard-container" class="hidden flex-grow flex flex-col">
+        <!-- HEADER -->
+        <header class="bg-[#111622] border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-bold tracking-widest">
+                    9U
+                </div>
+                <div>
+                    <h2 class="text-md font-semibold text-white tracking-tight flex items-center space-x-2">
+                        <span>ADMIN TERMINAL COCKPIT</span>
+                        <span id="role-badge" class="bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Super Admin</span>
+                    </h2>
+                    <p class="text-xs text-slate-500">Real-time ledger audit control module</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span id="admin-user-display" class="text-sm font-medium text-slate-300">Default Admin</span>
+                <button id="btn-logout" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-all">
+                    <span>DISENGAGE</span>
+                    <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="flex flex-col lg:flex-row flex-grow">
+            <!-- SIDE NAVIGATION BAR -->
+            <aside class="w-full lg:w-64 bg-[#111622] lg:border-r border-slate-800 p-4 space-y-1">
+                <p class="text-[10px] uppercase font-bold text-slate-500 tracking-widest px-3 mb-2">Primary Modules</p>
+                <button onclick="switchTab('analytics')" class="tab-btn w-full flex items-center space-x-3 text-sm font-semibold px-3.5 py-2.5 rounded-lg text-cyan-400 bg-cyan-950/20 border-l-2 border-cyan-500 transition-all text-left">
+                    <i data-lucide="combine" class="w-4 h-4"></i>
+                    <span>Ecosystem Telemetry</span>
+                </button>
+                <button onclick="switchTab('users')" class="tab-btn w-full flex items-center space-x-3 text-sm font-semibold px-3.5 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800/40 hover:text-white transition-all text-left">
+                    <i data-lucide="users-round" class="w-4 h-4"></i>
+                    <span>User Profile Directory</span>
+                </button>
+                <button onclick="switchTab('deposits')" class="tab-btn w-full flex items-center space-x-3 text-sm font-semibold px-3.5 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800/40 hover:text-white transition-all text-left">
+                    <i data-lucide="arrow-down-left" class="w-4 h-4"></i>
+                    <span>Deposits Processing</span>
+                </button>
+                <button onclick="switchTab('withdrawals')" class="tab-btn w-full flex items-center space-x-3 text-sm font-semibold px-3.5 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800/40 hover:text-white transition-all text-left">
+                    <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                    <span>Withdrawals Cleared</span>
+                </button>
+                <button onclick="switchTab('support')" class="tab-btn w-full flex items-center space-x-3 text-sm font-semibold px-3.5 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800/40 hover:text-white transition-all text-left">
+                    <i data-lucide="headset" class="w-4 h-4"></i>
+                    <span>Support Center Resolver</span>
+                </button>
+
+                <p class="text-[10px] uppercase font-bold text-slate-500 tracking-widest px-3 mt-6 mb-2">Ecosystem Config</p>
+                <button onclick="switchTab('gateways')" class="tab-btn w-full flex items-center space-x-3 text-sm font-semibold px-3.5 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800/40 hover:text-white transition-all text-left">
+                    <i data-lucide="database" class="w-4 h-4"></i>
+                    <span>Payment Gateways CMS</span>
+                </button>
+                <button onclick="switchTab('cms')" class="tab-btn w-full flex items-center space-x-3 text-sm font-semibold px-3.5 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800/40 hover:text-white transition-all text-left">
+                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                    <span>Dynamic Content Page Copy</span>
+                </button>
+                <button onclick="switchTab('announcements')" class="tab-btn w-full flex items-center space-x-3 text-sm font-semibold px-3.5 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800/40 hover:text-white transition-all text-left">
+                    <i data-lucide="megaphone" class="w-4 h-4"></i>
+                    <span>Ticker announcements</span>
+                </button>
+                <button onclick="switchTab('settings')" class="tab-btn w-full flex items-center space-x-3 text-sm font-semibold px-3.5 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800/40 hover:text-white transition-all text-left">
+                    <i data-lucide="cog" class="w-4 h-4"></i>
+                    <span>Reward settings Ratio</span>
+                </button>
+
+                <p class="text-[10px] uppercase font-bold text-slate-500 tracking-widest px-3 mt-6 mb-2">Audit Trails</p>
+                <button onclick="switchTab('audit')" class="tab-btn w-full flex items-center space-x-3 text-sm font-semibold px-3.5 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800/40 hover:text-white transition-all text-left">
+                    <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+                    <span>Administrator Auditing</span>
+                </button>
+                <button onclick="switchTab('activity')" class="tab-btn w-full flex items-center space-x-3 text-sm font-semibold px-3.5 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800/40 hover:text-white transition-all text-left">
+                    <i data-lucide="activity" class="w-4 h-4"></i>
+                    <span>User Activity Tracker</span>
+                </button>
+            </aside>
+
+            <!-- MAIN WORKING GRID CONTENT -->
+            <main class="flex-grow p-6 overflow-y-auto">
+                
+                <!-- STATUS MESSAGES MODAL -->
+                <div id="general-alert" class="hidden bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-xl p-4 mb-6 flex items-center justify-between transition-opacity">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        <span id="general-alert-msg" class="text-sm font-medium">Operation completed successfully.</span>
+                    </div>
+                    <button onclick="this.parentElement.classList.add('hidden')" class="hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+
+                <!-- TAB: ECOSYSTEM TELEMETRY -->
+                <section id="tab-analytics" class="space-y-6">
+                    <h3 class="text-xl font-bold text-white">System Performance Telemetry</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                        <div class="bg-[#111622] border border-slate-800 rounded-xl p-5 relative overflow-hidden">
+                            <div class="text-slate-500 text-xs uppercase font-bold tracking-wider mb-2">Active Wallet Users</div>
+                            <div class="text-3xl font-bold text-white tracking-tight" id="stat-users">0</div>
+                            <i data-lucide="users" class="absolute right-4 bottom-4 w-12 h-12 text-slate-800 pointer-events-none"></i>
+                        </div>
+                        <div class="bg-[#111622] border border-slate-800 rounded-xl p-5 relative overflow-hidden">
+                            <div class="text-slate-500 text-xs uppercase font-bold tracking-wider mb-2">Total Cleared Deposits</div>
+                            <div class="text-3xl font-bold text-cyan-400 tracking-tight" id="stat-deposits">₹0.00</div>
+                            <i data-lucide="trending-up" class="absolute right-4 bottom-4 w-12 h-12 text-slate-800 pointer-events-none"></i>
+                        </div>
+                        <div class="bg-[#111622] border border-slate-800 rounded-xl p-5 relative overflow-hidden">
+                            <div class="text-slate-500 text-xs uppercase font-bold tracking-wider mb-2">Total Settled Cashout</div>
+                            <div class="text-3xl font-bold text-indigo-400 tracking-tight" id="stat-withdrawals">₹0.00</div>
+                            <i data-lucide="trending-down" class="absolute right-4 bottom-4 w-12 h-12 text-slate-800 pointer-events-none"></i>
+                        </div>
+                        <div class="bg-[#111622] border border-slate-800 rounded-xl p-5 relative overflow-hidden">
+                            <div class="text-slate-500 text-xs uppercase font-bold tracking-wider mb-2">Open Support Tickets</div>
+                            <div class="text-3xl font-bold text-amber-500 tracking-tight" id="stat-tickets">0</div>
+                            <i data-lucide="message-square" class="absolute right-4 bottom-4 w-12 h-12 text-slate-800 pointer-events-none"></i>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB: USER PROFILE DIRECTORY -->
+                <section id="tab-users" class="hidden space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-white">Registered Wallet Accounts Directory</h3>
+                        <div class="text-xs text-slate-500">Real-time balances lookup from postgresql</div>
+                    </div>
+                    <div class="bg-[#111622] border border-slate-800 rounded-xl overflow-hidden shadow-lg overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-black/20 text-xs uppercase font-bold tracking-wider text-slate-400 border-b border-slate-800">
+                                <tr>
+                                    <th class="p-4">UserID</th>
+                                    <th class="p-4">Customer</th>
+                                    <th class="p-4">Phone Number</th>
+                                    <th class="p-4 text-right">Wallet Balance</th>
+                                    <th class="p-4 text-right">Rewards (Tokens)</th>
+                                    <th class="p-4">Referral Code</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 text-center">Actions / Manual Balancing</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-tbody" class="divide-y divide-slate-800/60 font-medium">
+                                <tr><td colspan="8" class="p-4 text-center text-slate-500">Searching active postgresql connections...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- TAB: DEPOSITS CLEARANCE -->
+                <section id="tab-deposits" class="hidden space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-white">Unified deposits verification Console</h3>
+                        <p class="text-xs text-slate-500">Authorize incoming UPI bank transfers matching dynamic UTR numbers</p>
+                    </div>
+                    <div class="bg-[#111622] border border-slate-800 rounded-xl overflow-hidden overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-black/20 text-xs uppercase font-bold tracking-wider text-slate-400 border-b border-slate-800">
+                                <tr>
+                                    <th class="p-4">TX ID</th>
+                                    <th class="p-4">User</th>
+                                    <th class="p-4">Amount</th>
+                                    <th class="p-4">UTR Reference</th>
+                                    <th class="p-4">Payment Node</th>
+                                    <th class="p-4">Submitted At</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 text-center">Settle Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="deposits-tbody" class="divide-y divide-slate-800/60 font-medium">
+                                <tr><td colspan="8" class="p-4 text-center text-slate-500">Loading open deposit slips...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- TAB: WITHDRAWALS CLEARED -->
+                <section id="tab-withdrawals" class="hidden space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-white">Instant Withdrawal settlement Center</h3>
+                        <p class="text-xs text-slate-500">Authorize cashouts after validating user histories</p>
+                    </div>
+                    <div class="bg-[#111622] border border-slate-800 rounded-xl overflow-hidden overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-black/20 text-xs uppercase font-bold tracking-wider text-slate-400 border-b border-slate-800">
+                                <tr>
+                                    <th class="p-4">TX ID</th>
+                                    <th class="p-4">User</th>
+                                    <th class="p-4">Payout Amount</th>
+                                    <th class="p-4">Destination UPI VPA</th>
+                                    <th class="p-4">Requested At</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 text-center">Settle Clearance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="withdrawals-tbody" class="divide-y divide-slate-800/60 font-medium">
+                                <tr><td colspan="7" class="p-4 text-center text-slate-500">Reading active payout records...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- TAB: SUPPORT CENTER RESOLVER -->
+                <section id="tab-support" class="hidden space-y-6">
+                    <h3 class="text-xl font-bold text-white">Open Helpdesk Support Tickets</h3>
+                    <div id="tickets-list" class="space-y-4">
+                        <p class="text-sm text-slate-500 bg-[#111622] p-4 rounded-lg">No active messages received.</p>
+                    </div>
+                </section>
+
+                <!-- TAB: PAYMENT GATEWAY CMS -->
+                <section id="tab-gateways" class="hidden space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-white">Dynamic Payment Gateway configuration</h3>
+                        <button onclick="openGatewayModal()" class="bg-cyan-500 hover:bg-cyan-600 active:bg-cyan-700 text-slate-950 px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-colors">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                            <span>INITIATE NEW GATEWAY</span>
+                        </button>
+                    </div>
+                    <div id="gateways-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    </div>
+                </section>
+
+                <!-- TAB: DYNAMIC ABOUT CMS PAGES -->
+                <section id="tab-cms" class="hidden space-y-6">
+                    <h3 class="text-xl font-bold text-white">Dynamic Content Page Copywriter</h3>
+                    <div id="cms-list" class="space-y-6">
+                    </div>
+                </section>
+
+                <!-- TAB: announcements -->
+                <section id="tab-announcements" class="hidden space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-white">Ticker Board announcements Management</h3>
+                        <button onclick="openAnnouncementModal()" class="bg-indigo-500/20 text-indigo-400 border border-indigo-400/30 hover:bg-indigo-500/35 px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center space-x-1 transition-colors">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                            <span>CREATE DYNAMIC ACCORDION</span>
+                        </button>
+                    </div>
+                    <div id="announcement-list" class="space-y-4">
+                        <p class="text-sm text-slate-500">Searching updates...</p>
+                    </div>
+                </section>
+
+                <!-- TAB: REWARD Ratio SETTINGS -->
+                <section id="tab-settings" class="hidden space-y-6">
+                    <h3 class="text-xl font-bold text-white">Global reward multipliers & Conversion parameters</h3>
+                    <div class="max-w-xl bg-[#111622] border border-slate-800 rounded-xl p-6 shadow-md">
+                        <form id="settings-form" class="space-y-5">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">New User Reward (Tokens)</label>
+                                    <input type="number" step="0.01" id="set-new-user" required class="w-full bg-[#0B0E14] border border-slate-800 rounded-lg py-2 px-3 text-white text-sm focus:outline-none focus:border-cyan-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Transaction Settle Reward</label>
+                                    <input type="number" step="0.01" id="set-deposit" required class="w-full bg-[#0B0E14] border border-slate-800 rounded-lg py-2 px-3 text-white text-sm focus:outline-none focus:border-cyan-500">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Referrer Reward (Tokens)</label>
+                                    <input type="number" step="0.01" id="set-referral" required class="w-full bg-[#0B0E14] border border-slate-800 rounded-lg py-2 px-3 text-white text-sm focus:outline-none focus:border-cyan-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Exchange conversion Sell Rate</label>
+                                    <input type="number" step="0.0001" id="set-rate" required class="w-full bg-[#0B0E14] border border-slate-800 rounded-lg py-2 px-3 text-white text-sm focus:outline-none focus:border-cyan-500">
+                                </div>
+                            </div>
+                            <div class="pt-4 border-t border-slate-800">
+                                <button type="submit" class="bg-cyan-500 text-slate-950 px-5 py-2 rounded-lg text-sm font-semibold hover:bg-cyan-600 transition-colors">
+                                    APPLY SYSTEM COEFFICIENTS
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- TAB: ADMINISTRATIVE AUDIT LOGS -->
+                <section id="tab-audit" class="hidden space-y-6">
+                    <h3 class="text-xl font-bold text-white">System Administrative Audit Trail</h3>
+                    <div class="bg-[#111622] border border-slate-800 rounded-xl p-4 max-h-[600px] overflow-y-auto code-font text-xs flex flex-col space-y-2 divide-y divide-slate-800/40" id="audit-logs">
+                        <div class="text-slate-500 py-1">Initializing ledger log connections...</div>
+                    </div>
+                </section>
+
+                <!-- TAB: Activity Logs -->
+                <section id="tab-activity" class="hidden space-y-6">
+                    <h3 class="text-xl font-bold text-white">Client User Activity Loggers</h3>
+                    <div class="bg-[#111622] border border-slate-800 rounded-xl p-4 max-h-[600px] overflow-y-auto code-font text-xs flex flex-col space-y-2 divide-y divide-slate-800/40" id="activity-logs">
+                        <div class="text-slate-500 py-1">Connecting client telemetry streams...</div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD GATEWAY -->
+    <div id="gateway-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-[#111622] border border-slate-800 rounded-2xl p-6 w-full max-w-lg shadow-2xl space-y-4">
+            <h4 class="text-lg font-bold text-white flex items-center space-x-2">
+                <i data-lucide="plus" class="w-5 h-5 text-cyan-400"></i>
+                <span id="gateway-modal-title">Configure PG Node terminal</span>
+            </h4>
+            <form id="gateway-form" class="space-y-4">
+                <input type="hidden" id="gateway-mode" value="create">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Gateway ID</label>
+                        <input type="text" id="gw-id" required class="w-full bg-[#0B0E14] border border-slate-800 rounded-lg py-2 px-3 text-white text-xs focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Display Name</label>
+                        <input type="text" id="gw-name" required class="w-full bg-[#0B0E14] border border-slate-800 rounded-lg py-2 px-3 text-white text-xs focus:outline-none focus:border-cyan-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">API Base Endpoint URL</label>
+                    <input type="url" id="gw-url" required class="w-full bg-[#0B0E14] border border-slate-800 rounded-lg py-2 px-3 text-white text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">API Secret Access Key</label>
+                        <input type="text" id="gw-key" class="w-full bg-[#0B0E14] border border-slate-800 rounded-lg py-2 px-3 text-white text-xs focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Merchant ID Identifier</label>
+                        <input type="text" id="gw-merch" class="w-full bg-[#0B0E14] border border-slate-800 rounded-lg py-2 px-3 text-white text-xs focus:outline-none focus:border-cyan-500">
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6 pt-2 border-t border-slate-800">
+                    <label class="flex items-center space-x-2 text-xs font-semibold cursor-pointer text-slate-300">
+                        <input type="checkbox" id="gw-enabled" class="rounded bg-slate-900 border-slate-800 text-cyan-500 focus:ring-slate-950">
+                        <span>Gateway Active</span>
+                    </label>
+                    <label class="flex items-center space-x-2 text-xs font-semibold cursor-pointer text-slate-300">
+                        <input type="checkbox" id="gw-default" class="rounded bg-slate-900 border-slate-800 text-cyan-500 focus:ring-slate-950">
+                        <span>Set Default Processor</span>
+                    </label>
+                </div>
+                <div class="flex space-x-3 pt-3">
+                    <button type="submit" class="flex-grow bg-cyan-500 text-slate-950 py-2 rounded-lg text-sm font-semibold hover:bg-cyan-600 transition-colors">SAVE TERMINAL CONNECT</button>
+                    <button type="button" onclick="closeGatewayModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-5 py-2 rounded-lg text-sm font-medium transition-colors">DISMISS</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD ANNOUNCEMENT -->
+    <div id="ann-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-[#111622] border border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4">
+            <h4 class="text-lg font-bold text-white">Issue Dynamic announcement</h4>
+            <form id="ann-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">announcement Headline</label>
+                    <input type="text" id="ann-title" required class="w-full bg-[#0B0E14] border border-slate-800 rounded-lg py-2 px-3 text-white text-xs focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Detailed HTML / Text Copy</label>
+                    <textarea id="ann-content" required rows="5" class="w-full bg-[#0B0E14] border border-slate-800 rounded-lg py-2 px-3 text-white text-xs focus:outline-none focus:border-indigo-500"></textarea>
+                </div>
+                <div class="flex space-x-3 pt-2">
+                    <button type="submit" class="flex-grow bg-indigo-500 text-white py-2 rounded-lg text-sm font-semibold hover:bg-indigo-600 transition-colors">PUBLISH ACCORDION</button>
+                    <button type="button" onclick="closeAnnouncementModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-5 py-2 rounded-lg text-sm font-medium transition-colors">DISMISS</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD ENGINE SCRIPT -->
+    <script>
+        let apiToken = localStorage.getItem('9upi_admin_token') || '';
+        let currentAdminUser = JSON.parse(localStorage.getItem('9upi_admin_user')) || null;
+
+        // Auto Bootstrapper
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            if (apiToken && currentAdminUser) {
+                showDashboard();
+            }
+        });
+
+        // Toggle Views
+        function showDashboard() {
+            document.getElementById('login-container').classList.add('hidden');
+            document.getElementById('dashboard-container').classList.remove('hidden');
+            document.getElementById('admin-user-display').innerText = currentAdminUser.name;
+            document.getElementById('role-badge').innerText = currentAdminUser.role || 'Admin';
+            loadAnalytics();
+        }
+
+        function showLogin() {
+            document.getElementById('login-container').classList.remove('hidden');
+            document.getElementById('dashboard-container').classList.add('hidden');
+            localStorage.removeItem('9upi_admin_token');
+            localStorage.removeItem('9upi_admin_user');
+            apiToken = '';
+            currentAdminUser = null;
+        }
+
+        // Switch Action Tabs
+        function switchTab(tabId) {
+            // Update menus selection highlights
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn w-full flex items-center space-x-3 text-sm font-semibold px-3.5 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800/40 hover:text-white transition-all text-left";
+            });
+            event.currentTarget.className = "tab-btn w-full flex items-center space-x-3 text-sm font-semibold px-3.5 py-2.5 rounded-lg text-cyan-400 bg-cyan-950/20 border-l-2 border-cyan-500 transition-all text-left";
+
+            // Hide all tab views
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            
+            // Show target
+            const targetSec = document.getElementById(`tab-${tabId}`);
+            if (targetSec) {
+                targetSec.classList.remove('hidden');
+            }
+
+            // Lazy data loaders
+            if (tabId === 'analytics') loadAnalytics();
+            if (tabId === 'users') loadUsers();
+            if (tabId === 'deposits') loadDeposits();
+            if (tabId === 'withdrawals') loadWithdrawals();
+            if (tabId === 'support') loadTickets();
+            if (tabId === 'gateways') loadGateways();
+            if (tabId === 'cms') loadCms();
+            if (tabId === 'announcements') loadAnnouncements();
+            if (tabId === 'settings') loadSettings();
+            if (tabId === 'audit') loadAuditLogs();
+            if (tabId === 'activity') loadActivityLogs();
+        }
+
+        // Unified Fetch Handler with Auth Headers
+        async function apiFetch(endpoint, options = {}) {
+            options.headers = options.headers || {};
+            options.headers['Content-Type'] = 'application/json';
+            if (apiToken) {
+                options.headers['Authorization'] = `Bearer ${apiToken}`;
+            }
+            try {
+                const res = await fetch(endpoint, options);
+                if (res.status === 401 || res.status === 403) {
+                    showLogin();
+                    throw new Error('Verification session expired');
+                }
+                return await res.json();
+            } catch (err) {
+                console.error('API Fetch err:', err);
+                return { success: false, message: err.message };
+            }
+        }
+
+        // LOGIN SUBMISSION HANDLER
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userId = document.getElementById('login-username').value;
+            const pin = document.getElementById('login-pin').value;
+            const errMsg = document.getElementById('login-err-msg');
+
+            errMsg.classList.add('hidden');
+
+            const data = await apiFetch('/api/auth/login', {
+                method: 'POST',
+                body: JSON.stringify({ userId, pin })
+            });
+
+            if (data.success && data.token && data.user && data.user.isAdmin) {
+                apiToken = data.token;
+                currentAdminUser = data.user;
+                localStorage.setItem('9upi_admin_token', apiToken);
+                localStorage.setItem('9upi_admin_user', JSON.stringify(currentAdminUser));
+                showDashboard();
+            } else {
+                document.getElementById('login-err-text').innerText = data.message || 'Administrative PIN validation failed.';
+                errMsg.classList.remove('hidden');
+            }
+        });
+
+        // LOGOUT
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            showLogin();
+        });
+
+        // 1. DATA LOADERS: ECOSYSTEM TELEMETRY STATS
+        async function loadAnalytics() {
+            const data = await apiFetch('/api/admin/analytics');
+            if (data.success) {
+                document.getElementById('stat-users').innerText = data.analytics.totalUsers;
+                document.getElementById('stat-deposits').innerText = `₹${data.analytics.totalDeposits.toFixed(2)}`;
+                document.getElementById('stat-withdrawals').innerText = `₹${data.analytics.totalWithdrawals.toFixed(2)}`;
+                document.getElementById('stat-tickets').innerText = data.analytics.activeTickets;
+            }
+        }
+
+        // 2. DATA LOADERS: USER PROFILE DIRECTORY & CONTROLS
+        async function loadUsers() {
+            const data = await apiFetch('/api/admin/users');
+            const tbody = document.getElementById('users-tbody');
+            if (data.success) {
+                tbody.innerHTML = '';
+                data.users.forEach(u => {
+                    const blockBtn = u.isBlocked ? 
+                        `<button onclick="toggleBlock('${u.userId}')" class="bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-slate-950 px-2.5 py-1 rounded text-xs font-semibold mr-1 transition-colors">UNBLOCK</button>` :
+                        `<button onclick="toggleBlock('${u.userId}')" class="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-slate-950 px-2.5 py-1 rounded text-xs font-semibold mr-1 transition-colors">LOCK</button>`;
+
+                    const adjustArea = `
+                        <div class="inline-flex items-center space-x-1">
+                            <input type="number" placeholder="wallet +/-" id="adj-w-${u.userId}" class="bg-[#0B0E14] border border-slate-800 text-white rounded px-1.5 py-0.5 text-[10px] w-16 focus:outline-none">
+                            <input type="number" placeholder="reward +/-" id="adj-r-${u.userId}" class="bg-[#0B0E14] border border-slate-800 text-white rounded px-1.5 py-0.5 text-[10px] w-16 focus:outline-none">
+                            <button onclick="applyBalAdjust('${u.userId}')" class="bg-cyan-500 text-slate-950 rounded px-2 py-0.5 text-[10px] font-bold"><i data-lucide="check" class="w-3 h-3"></i></button>
+                        </div>
+                    `;
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-800/20">
+                            <td class="p-4 code-font text-cyan-400">${u.userId}</td>
+                            <td class="p-4">${u.name}</td>
+                            <td class="p-4 text-slate-400 font-medium">${u.phone}</td>
+                            <td class="p-4 text-right text-white">₹${u.walletBalance.toFixed(2)}</td>
+                            <td class="p-4 text-right text-cyan-400">${u.rewardBalance.toFixed(0)}</td>
+                            <td class="p-4 text-slate-400 code-font">${u.referralCode}</td>
+                            <td class="p-4">
+                                <span class="${u.isBlocked ? 'bg-red-500/15 text-red-500 border-red-500/30' : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'} border px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider">
+                                    ${u.isBlocked ? 'Blocked' : 'Active'}
+                                </span>
+                            </td>
+                            <td class="p-4 text-center">
+                                ${blockBtn}
+                                ${adjustArea}
+                            </td>
+                        </tr>
+                    `;
+                });
+                lucide.createIcons();
+            }
+        }
+
+        async function toggleBlock(userId) {
+            const data = await apiFetch('/api/admin/users/toggle-block', {
+                method: 'POST',
+                body: JSON.stringify({ userId })
+            });
+            if (data.success) {
+                showAlert('User compliance lock successfully updated.');
+                loadUsers();
+            }
+        }
+
+        async function applyBalAdjust(userId) {
+            const walletDelta = parseFloat(document.getElementById(`adj-w-${userId}`).value || 0);
+            const rewardDelta = parseFloat(document.getElementById(`adj-r-${userId}`).value || 0);
+
+            if (walletDelta === 0 && rewardDelta === 0) return;
+
+            const data = await apiFetch('/api/admin/users/adjust', {
+                method: 'POST',
+                body: JSON.stringify({ userId, walletDelta, rewardDelta })
+            });
+
+            if (data.success) {
+                showAlert(`User balances successfully adjusted.`);
+                loadUsers();
+            }
+        }
+
+        // 3. DATA LOADERS: DEPOSITS APPROVALS/REJECTIONS
+        async function loadDeposits() {
+            const data = await apiFetch('/api/admin/deposits');
+            const tbody = document.getElementById('deposits-tbody');
+            if (data.success) {
+                tbody.innerHTML = '';
+                if (data.deposits.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" class="p-4 text-center text-slate-500">No deposit receipts currently registered in the database.</td></tr>';
+                    return;
+                }
+                data.deposits.forEach(d => {
+                    let actions = '';
+                    if (d.status === 'Pending') {
+                        actions = `
+                            <button onclick="approveDeposit('${d.transaction_id}')" class="bg-cyan-500 text-slate-950 font-bold px-2.5 py-1 rounded text-xs mr-1">APPROVE</button>
+                            <button onclick="rejectDeposit('${d.transaction_id}')" class="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-slate-950 font-bold px-2.5 py-1 rounded text-xs">DECLINE</button>
+                        `;
+                    } else {
+                        actions = `<span class="text-slate-500 text-xs">Archived</span>`;
+                    }
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-800/20">
+                            <td class="p-4 code-font text-cyan-500">${d.transaction_id}</td>
+                            <td class="p-4">
+                                <span class="text-white block font-semibold">${d.user_name}</span>
+                                <span class="text-xs text-slate-500">${d.user_id}</span>
+                            </td>
+                            <td class="p-4 text-white text-md font-bold">₹${parseFloat(d.amount).toFixed(2)}</td>
+                            <td class="p-4 code-font text-slate-300 font-bold tracking-widest">${d.utr}</td>
+                            <td class="p-4 text-slate-400">${d.gateway_name || 'Manual Netbank'}</td>
+                            <td class="p-4 text-xs text-slate-500">${new Date(d.created_at).toLocaleString()}</td>
+                            <td class="p-4">
+                                <span class="${getBadgeClass(d.status)} border px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider">
+                                    ${d.status}
+                                </span>
+                            </td>
+                            <td class="p-4 text-center">${actions}</td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        async function approveDeposit(transactionId) {
+            const data = await apiFetch('/api/admin/deposits/approve', {
+                method: 'POST',
+                body: JSON.stringify({ transactionId })
+            });
+            if (data.success) {
+                showAlert('Deposit successfully approved! Credit processed to customer.');
+                loadDeposits();
+            }
+        }
+
+        async function rejectDeposit(transactionId) {
+            const data = await apiFetch('/api/admin/deposits/reject', {
+                method: 'POST',
+                body: JSON.stringify({ transactionId })
+            });
+            if (data.success) {
+                showAlert('Deposit slips cancelled.');
+                loadDeposits();
+            }
+        }
+
+        // 4. DATA LOADERS: WITHDRAWALS CLEARANCES
+        async function loadWithdrawals() {
+            const data = await apiFetch('/api/admin/withdrawals');
+            const tbody = document.getElementById('withdrawals-tbody');
+            if (data.success) {
+                tbody.innerHTML = '';
+                if (data.withdrawals.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500">No cashouts currently registered in the database.</td></tr>';
+                    return;
+                }
+                data.withdrawals.forEach(w => {
+                    let actions = '';
+                    if (w.status === 'Pending') {
+                        actions = `
+                            <button onclick="approveWithdrawalPrompt('${w.transaction_id}')" class="bg-indigo-500 text-white font-bold px-2.5 py-1 rounded text-xs mr-1">SETTLE OK</button>
+                            <button onclick="rejectWithdrawal('${w.transaction_id}')" class="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-slate-950 font-bold px-2.5 py-1 rounded text-xs">DECLINE</button>
+                        `;
+                    } else {
+                        actions = `<span class="text-slate-500 text-xs">Processed</span>`;
+                    }
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-800/20">
+                            <td class="p-4 code-font text-cyan-500">${w.transaction_id}</td>
+                            <td class="p-4">
+                                <span class="text-white block font-semibold">${w.user_name}</span>
+                                <span class="text-xs text-slate-500">${w.user_id}</span>
+                            </td>
+                            <td class="p-4 text-indigo-400 text-md font-bold">₹${parseFloat(w.amount).toFixed(2)}</td>
+                            <td class="p-4 text-slate-300 font-semibold">${w.upi_address}</td>
+                            <td class="p-4 text-xs text-slate-500">${new Date(w.created_at).toLocaleString()}</td>
+                            <td class="p-4">
+                                <span class="${getBadgeClass(w.status)} border px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider">
+                                    ${w.status}
+                                </span>
+                            </td>
+                            <td class="p-4 text-center">${actions}</td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        async function approveWithdrawalPrompt(transactionId) {
+            const utr = prompt('Please enter the bank payout reference clearance UTR code:', `BANK-WTD-${Date.now()}`);
+            if (utr === null) return;
+
+            const data = await apiFetch('/api/admin/withdrawals/approve', {
+                method: 'POST',
+                body: JSON.stringify({ transactionId, utr })
+            });
+
+            if (data.success) {
+                showAlert('Withdrawal successfully approved! Bank payout logged.');
+                loadWithdrawals();
+            }
+        }
+
+        async function rejectWithdrawal(transactionId) {
+            const confirmReject = confirm('Decline this withdrawal request? This will instantly credit the funds back to the user’s wallet.');
+            if (!confirmReject) return;
+
+            const data = await apiFetch('/api/admin/withdrawals/reject', {
+                method: 'POST',
+                body: JSON.stringify({ transactionId })
+            });
+            if (data.success) {
+                showAlert('Withdrawal rejected. Funds returned safely to customer.');
+                loadWithdrawals();
+            }
+        }
+
+        // Helper Badge Styles
+        function getBadgeClass(status) {
+            if (status === 'Approved' || status === 'Success') return 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30';
+            if (status === 'Pending') return 'bg-amber-500/15 text-amber-500 border-amber-500/30';
+            return 'bg-red-500/15 text-red-500 border-red-500/30';
+        }
+
+        // 5. DATA LOADERS: HELPDESK SUPPORT RESOLVER
+        async function loadTickets() {
+            const data = await apiFetch('/api/admin/support');
+            const container = document.getElementById('tickets-list');
+            if (data.success) {
+                container.innerHTML = '';
+                if (data.tickets.length === 0) {
+                    container.innerHTML = '<p class="text-sm text-slate-500 bg-[#111622] p-4 rounded-lg">No assistance requests logged.</p>';
+                    return;
+                }
+                data.tickets.forEach(t => {
+                    const replyArea = t.reply ? 
+                        `<div class="mt-3 bg-black/35 rounded-lg p-3 border border-slate-800/80">
+                            <span class="text-[10px] font-bold text-cyan-400 block uppercase mb-1">Administrative Reply</span>
+                            <p class="text-xs text-slate-300 font-medium">${t.reply}</p>
+                         </div>` : 
+                        `<div class="mt-4 flex flex-col space-y-2">
+                            <textarea id="reply-${t.ticket_id}" placeholder="Type support reply answer..." rows="2" class="w-full bg-[#0B0E14] border border-slate-800 text-white p-2.5 rounded-lg text-sm focus:outline-none focus:border-cyan-500"></textarea>
+                            <button onclick="replyTicket('${t.ticket_id}')" class="bg-cyan-500 text-slate-950 font-bold self-end px-4 py-1.5 rounded-lg text-xs hover:bg-cyan-600">DISPATCH RESOLUTION</button>
+                         </div>`;
+
+                    container.innerHTML += `
+                        <div class="bg-[#111622] border border-slate-800 rounded-xl p-5 shadow-sm space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="bg-indigo-500/15 text-indigo-400 font-bold border border-indigo-500/30 text-[10px] uppercase px-2 py-0.5 rounded-md">Ticket #${t.ticket_id}</span>
+                                <span class="text-xs text-slate-500">${new Date(t.created_at).toLocaleString()}</span>
+                            </div>
+                            <h5 class="text-md font-bold text-white">${t.subject}</h5>
+                            <p class="text-sm font-medium text-slate-300 bg-black/10 p-3 rounded-lg border border-slate-800/40">${t.message}</p>
+                            <div class="text-[11px] text-slate-500">Submitted by: <span class="text-slate-300">${t.user_name}</span> (${t.user_phone})</div>
+                            ${replyArea}
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        async function replyTicket(ticketId) {
+            const reply = document.getElementById(`reply-${ticketId}`).value;
+            if (!reply || reply.trim().length === 0) return;
+
+            const data = await apiFetch('/api/admin/support/reply', {
+                method: 'POST',
+                body: JSON.stringify({ ticketId, reply })
+            });
+
+            if (data.success) {
+                showAlert('Support assistance resolution logged.');
+                loadTickets();
+            }
+        }
+
+        // 6. DATA LOADERS: PAYMENT GATEWAYS CONFIG
+        async function loadGateways() {
+            const data = await apiFetch('/api/admin/gateways');
+            const grid = document.getElementById('gateways-grid');
+            if (data.success) {
+                grid.innerHTML = '';
+                data.gateways.forEach(gw => {
+                    grid.innerHTML += `
+                        <div class="bg-[#111622] border border-slate-800 rounded-xl p-5 space-y-3 relative shadow-md">
+                            <div class="flex items-center justify-between">
+                                <h5 class="text-md font-bold text-white flex items-center space-x-2">
+                                    <i data-lucide="layout-grid" class="w-4 h-4 text-cyan-400"></i>
+                                    <span>${gw.name}</span>
+                                </h5>
+                                <div class="flex space-x-1">
+                                    <span class="${gw.is_enabled ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-500'} border text-[9px] uppercase font-bold px-2 py-0.5 rounded">
+                                        ${gw.is_enabled ? 'Active' : 'Offline'}
+                                    </span>
+                                    ${gw.is_default ? '<span class="bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 text-[9px] uppercase font-bold px-2 py-0.5 rounded">DEFAULT</span>' : ''}
+                                </div>
+                            </div>
+                            <div class="space-y-1 font-semibold text-xs text-slate-400 code-font bg-[#0B0E14] p-3 rounded-lg">
+                                <div><span class="text-slate-500">ENDPOINT ID :</span> ${gw.id}</div>
+                                <div><span class="text-slate-500">GATEWAY URL:</span> ${gw.api_url}</div>
+                                <div><span class="text-slate-500">MERCHANT ID:</span> ${gw.merchant_id || 'Not configured'}</div>
+                            </div>
+                            <div class="flex justify-end space-x-2 pt-2 border-t border-slate-800/80">
+                                <button onclick="editGatewayPrompt('${gw.id}', '${gw.name}', '${gw.api_url}', '${gw.merchant_id}', ${gw.is_enabled}, ${gw.is_default})" class="bg-cyan-500/10 hover:bg-cyan-500 text-cyan-400 hover:text-slate-950 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1 transition-colors">
+                                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                                    <span>EDIT</span>
+                                </button>
+                                <button onclick="deleteGateway('${gw.id}')" class="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-slate-950 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1 transition-colors">
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                    <span>REMOVE</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                lucide.createIcons();
+            }
+        }
+
+        function openGatewayModal() {
+            document.getElementById('gateway-mode').value = 'create';
+            document.getElementById('gateway-modal-title').innerText = 'Register New payment system Connect';
+            document.getElementById('gw-id').removeAttribute('readonly');
+            document.getElementById('gateway-form').reset();
+            document.getElementById('gateway-modal').classList.remove('hidden');
+        }
+
+        function closeGatewayModal() {
+            document.getElementById('gateway-modal').classList.add('hidden');
+        }
+
+        function editGatewayPrompt(id, name, url, merch, enabled, isDefault) {
+            document.getElementById('gateway-mode').value = 'update';
+            document.getElementById('gateway-modal-title').innerText = 'Modify PG terminal config';
+            const idField = document.getElementById('gw-id');
+            idField.value = id;
+            idField.setAttribute('readonly', 'true');
+            document.getElementById('gw-name').value = name;
+            document.getElementById('gw-url').value = url;
+            document.getElementById('gw-key').value = '••••••••';
+            document.getElementById('gw-merch').value = merch;
+            document.getElementById('gw-enabled').checked = enabled;
+            document.getElementById('gw-default').checked = isDefault;
+            document.getElementById('gateway-modal').classList.remove('hidden');
+        }
+
+        document.getElementById('gateway-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const mode = document.getElementById('gateway-mode').value;
+            const endpoint = mode === 'create' ? '/api/admin/gateways' : '/api/admin/gateways/update';
+            
+            const payload = {
+                id: document.getElementById('gw-id').value,
+                name: document.getElementById('gw-name').value,
+                apiUrl: document.getElementById('gw-url').value,
+                apiKey: document.getElementById('gw-key').value,
+                secretKey: '',
+                merchantId: document.getElementById('gw-merch').value,
+                isEnabled: document.getElementById('gw-enabled').checked,
+                isDefault: document.getElementById('gw-default').checked
+            };
+
+            const data = await apiFetch(endpoint, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+
+            if (data.success) {
+                closeGatewayModal();
+                showAlert('Gateway credentials configuration saved.');
+                loadGateways();
+            }
+        });
+
+        async function deleteGateway(id) {
+            if (!confirm(`Permanently remove payment system node: ${id}?`)) return;
+            const data = await apiFetch(`/api/admin/gateways/${id}`, { method: 'DELETE' });
+            if (data.success) {
+                showAlert('Gateway deleted successfully.');
+                loadGateways();
+            }
+        }
+
+        // 7. DATA LOADERS: DYNAMIC ABOUT CMS PAGES
+        async function loadCms() {
+            const data = await apiFetch('/api/admin/cms');
+            const container = document.getElementById('cms-list');
+            if (data.success) {
+                container.innerHTML = '';
+                data.cms.forEach(p => {
+                    container.innerHTML += `
+                        <div class="bg-[#111622] border border-slate-800 rounded-xl p-5 space-y-3 shadow-md">
+                            <div>
+                                <span class="bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-bold text-[10px] uppercase px-2 py-0.5 rounded">PAGE KEY: ${p.page_key}</span>
+                            </div>
+                            <div class="space-y-3">
+                                <input type="text" id="cms-t-${p.page_key}" value="${p.title}" class="w-full bg-[#0B0E14] border border-slate-800 text-white rounded-lg p-2.5 font-bold focus:outline-none focus:border-cyan-500 text-md">
+                                <textarea id="cms-c-${p.page_key}" rows="4" class="w-full bg-[#0B0E14] border border-slate-800 text-slate-300 rounded-lg p-2.5 text-sm font-medium focus:outline-none focus:border-cyan-500">${p.content}</textarea>
+                            </div>
+                            <div class="flex justify-end pt-2 border-t border-slate-800/80">
+                                <button onclick="saveCms('${p.page_key}')" class="bg-cyan-500 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs hover:bg-cyan-600 transition-colors">UPDATE CMS LIVE COPY</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        async function saveCms(pageKey) {
+            const title = document.getElementById(`cms-t-${pageKey}`).value;
+            const content = document.getElementById(`cms-c-${pageKey}`).value;
+
+            const data = await apiFetch('/api/admin/cms', {
+                method: 'POST',
+                body: JSON.stringify({ pageKey, title, content })
+            });
+
+            if (data.success) {
+                showAlert('CMS Live copy refreshed.');
+                loadCms();
+            }
+        }
+
+        // 8. DATA LOADERS: ACCORDION TICKERS BOARD announcements
+        async function loadAnnouncements() {
+            const data = await apiFetch('/api/admin/announcements');
+            const container = document.getElementById('announcement-list');
+            if (data.success) {
+                container.innerHTML = '';
+                if (data.announcements.length === 0) {
+                    container.innerHTML = '<p class="text-xs text-slate-500">No system announcements posted.</p>';
+                    return;
+                }
+                data.announcements.forEach(a => {
+                    container.innerHTML += `
+                        <div class="bg-[#111622] border border-slate-800 rounded-xl p-4 flex items-start justify-between">
+                            <div>
+                                <h6 class="font-bold text-white text-md">${a.title}</h6>
+                                <p class="text-xs text-slate-400 mt-1">${a.content}</p>
+                                <span class="text-[9px] text-slate-500 block mt-2">Posted on: ${new Date(a.created_at).toLocaleString()}</span>
+                            </div>
+                            <button onclick="deleteAnnouncement('${a.id}')" class="text-red-400 hover:text-red-500 p-1 bg-red-500/15 rounded border border-red-500/20"><i data-lucide="trash" class="w-4 h-4"></i></button>
+                        </div>
+                    `;
+                });
+                lucide.createIcons();
+            }
+        }
+
+        function openAnnouncementModal() {
+            document.getElementById('ann-form').reset();
+            document.getElementById('ann-modal').classList.remove('hidden');
+        }
+
+        function closeAnnouncementModal() {
+            document.getElementById('ann-modal').classList.add('hidden');
+        }
+
+        document.getElementById('ann-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                title: document.getElementById('ann-title').value,
+                content: document.getElementById('ann-content').value
+            };
+            const data = await apiFetch('/api/admin/announcements', {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+            if (data.success) {
+                closeAnnouncementModal();
+                showAlert('announcement ticker posted.');
+                loadAnnouncements();
+            }
+        });
+
+        async function deleteAnnouncement(id) {
+            if (!confirm('Discard this announcement?')) return;
+            const data = await apiFetch(`/api/admin/announcements/${id}`, { method: 'DELETE' });
+            if (data.success) {
+                showAlert('announcement deleted.');
+                loadAnnouncements();
+            }
+        }
+
+        // 9. DATA LOADERS: REWARD RATIO SETTINGS
+        async function loadSettings() {
+            const data = await apiFetch('/api/admin/settings');
+            if (data.success && data.settings) {
+                document.getElementById('set-new-user').value = data.settings.new_user_reward;
+                document.getElementById('set-deposit').value = data.settings.transaction_reward;
+                document.getElementById('set-referral').value = data.settings.referral_reward;
+                document.getElementById('set-rate').value = data.settings.sell_rate;
+            }
+        }
+
+        document.getElementById('settings-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const payload = {
+                newUserReward: parseFloat(document.getElementById('set-new-user').value),
+                transactionReward: parseFloat(document.getElementById('set-deposit').value),
+                referralReward: parseFloat(document.getElementById('set-referral').value),
+                buyRate: 85.5,
+                sellRate: parseFloat(document.getElementById('set-rate').value)
+            };
+
+            const data = await apiFetch('/api/admin/settings', {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+
+            if (data.success) {
+                showAlert('Ecosystem configuration settings updated live.');
+            }
+        });
+
+        // 10. SYSTEM AUDITING TRACE LOGGER
+        async function loadAuditLogs() {
+            const data = await apiFetch('/api/admin/audit');
+            const container = document.getElementById('audit-logs');
+            if (data.success) {
+                container.innerHTML = '';
+                if (data.logs.length === 0) {
+                    container.innerHTML = '<div class="text-slate-500 py-1">No system logging registered.</div>';
+                    return;
+                }
+                data.logs.forEach(l => {
+                    container.innerHTML += `
+                        <div class="py-2 flex items-start justify-between text-[11px] font-medium">
+                            <div class="flex flex-col space-y-1">
+                                <span class="text-white font-bold"><span class="text-cyan-400">[${l.admin_user}]</span> ${l.action}</span>
+                                <span class="text-slate-400">${l.details || ''}</span>
+                            </div>
+                            <span class="text-[10px] text-slate-500 whitespace-nowrap">${new Date(l.created_at).toLocaleString()}</span>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        // 11. Activity Log LOGGER
+        async function loadActivityLogs() {
+            const data = await apiFetch('/api/admin/activity');
+            const container = document.getElementById('activity-logs');
+            if (data.success) {
+                container.innerHTML = '';
+                if (data.logs.length === 0) {
+                    container.innerHTML = '<div class="text-slate-500 py-1">No activity streams registered.</div>';
+                    return;
+                }
+                data.logs.forEach(l => {
+                    container.innerHTML += `
+                        <div class="py-2 flex items-start justify-between text-[11px] font-medium">
+                            <div class="flex flex-col space-y-1">
+                                <span class="text-white font-bold"><span class="text-indigo-400">[USER: ${l.user_name} / ID: ${l.user_id}]</span> ${l.activity}</span>
+                                <span class="text-slate-400">${l.details || ''}</span>
+                            </div>
+                            <span class="text-[10px] text-slate-500 whitespace-nowrap">${new Date(l.created_at).toLocaleString()}</span>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        // Action Alerts HUD helper
+        function showAlert(msg) {
+            document.getElementById('general-alert-msg').innerText = msg;
+            document.getElementById('general-alert').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('general-alert').classList.add('hidden');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
