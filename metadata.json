@@ -1,0 +1,6 @@
+{
+  "name": "9UPI PAY",
+  "description": "Premium dark fintech payment and wallet platform",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
